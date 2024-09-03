@@ -41,8 +41,8 @@ While (1) and (2) only require the matrix A, (3) and (4) additional require the 
 Author: Yana Botvinnik
 Contact: ybotvinn@barnard.edu
 
-<!-- Finish the paper to be able to cite it! -->
+<!-- Finish the paper to be able to cite it!
 To cite this work in your research, please use the following bibtex:
 ```
 
-```
+``` -->
