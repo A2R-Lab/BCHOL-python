@@ -23,9 +23,9 @@ If you just have an A matrix and a b vector look at  ```solve_build.py``` for an
 
 Both files will return an xyz solution vector.
 
+<!-- Ask Brian what are your preconditiones!
 ## Preconditoners 
 
-<!-- Ask Brian what are your preconditiones! -->
 
 This provides the following preconditoners
 
@@ -35,6 +35,8 @@ This provides the following preconditoners
 4. Symmetric Stair: "SS" 
 
 While (1) and (2) only require the matrix A, (3) and (4) additional require the block_size (nx) to be passed in.
+ -->
+
 
 ### Citing
 
