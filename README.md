@@ -17,7 +17,7 @@ pip3 install -r requirements.txt
 
 <!-- Add actual code lines for example! -->
 
-If you already have a defined LQR problem in a KKT form in a saved file .json/.csv you can look at ```solve_load.py``` for an example.
+If you already have a defined LQR problem in a KKT form in a saved file **.json/.csv** you can look at ```solve_load.py``` for an example.
 
 If you just have an A matrix and a b vector look at  ```solve_build.py``` for an example.
 
