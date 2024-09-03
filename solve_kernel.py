@@ -26,9 +26,10 @@ def solve_BCHOL(knot_points,control_size, state_size,
     
 
   #make sure Q is not zero(add_epsln)
-  diag = np.diagonal(Q)
-  diag[diag == 0] += 1e-5
-  Q = np.diag(diag)
+  epsln = 1e-6
+  for i in range(Q.shape[0]):
+     Q[i]+= np.diag(np.full(Q.shape[1], epsln))
+     
   for ind in range (knot_points):
       nested_dissect.solveLeaf(binary_tree,ind, state_size,knot_points,Q,R,q,r,A,B,d,F_lambda,F_state, F_input)
 
