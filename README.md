@@ -2,7 +2,7 @@
 
 Python proof of concept for [BCHOL](https://github.com/A2R-Lab/BCHOL). 
 
-Solves for x in Ax = b, using the recursive Schur Linear Quadratic Regulator explained in the [paper](https://bjack205.github.io/papers/rslqr.pdf). It requires A to be a positive semi-definite matrix to guarantee a good result.
+Solves for x in Ax = b, using the recursive Schur Linear Quadratic Regulator explained in the paper [A Parallell Linear System Solver for Optimal Control](https://bjack205.github.io/papers/rslqr.pdf) by Brian E.Jackson. It requires A to be a positive semi-definite matrix to guarantee a good result.
 
 ## Requirements
 *[Python 3.10+](https://www.python.org/downloads/)
