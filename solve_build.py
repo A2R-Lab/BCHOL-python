@@ -11,7 +11,6 @@ import csv
 INIT = False
 
 #function specific imports
-import nested_dissect
 import solve_kernel
 
 
@@ -36,7 +35,12 @@ def solve_Pendulum(G: np.ndarray, g: np.ndarray, C: np.ndarray, c: np.ndarray, N
 
     nhorizon = N
     # nhorizon = 8
-    nstates = 2
+    nstates = 2 #alternative 
+    '''
+    nq = trajoptMPCReference.plant.get_num_pos()
+	nv = trajoptMPCReference.plant.get_num_vel()
+	nx = nq + nv
+	nu = trajoptMPCReference.plant.get_num_cntrl()'''
     ninputs =1
 
 

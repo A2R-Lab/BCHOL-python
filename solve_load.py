@@ -11,8 +11,7 @@ import csv
 INIT = False
 
 #function specific imports
-import nested_dissect
-import solve_kernel
+import BCHOL
 
 
 #import solve
@@ -107,7 +106,7 @@ if(INIT):
         print(f"d {d[i]}")
 
 #imitating calling the kernel
-solve_kernel.solve_BCHOL(nhorizon,ninputs,nstates,Q,R,q,r,A,B,d)
+BCHOL.BCHOL(nhorizon,ninputs,nstates,Q,R,q,r,A,B,d)
 
 
 
