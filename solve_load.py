@@ -11,7 +11,8 @@ import csv
 INIT = False
 
 #function specific imports
-import BCHOL
+from BCHOL import BCHOL
+
 
 
 #import solve
@@ -106,11 +107,11 @@ if(INIT):
         print(f"d {d[i]}")
 
 #imitating calling the kernel
-BCHOL.BCHOL(nhorizon,ninputs,nstates,Q,R,q,r,A,B,d)
-
-
-
-
-
-
-    
+BCHOL(nhorizon,ninputs,nstates,Q,R,q,r,A,B,d)
+#DELETE LATER
+print("soln:\n")
+for i in range(nhorizon):
+        print(f"d_{i} {d[i]}") #lambdas
+        print(f"q_{i}  {q[i]}") #x vector
+        print(f"r_{i} {r[i]}") #u vector
+   
