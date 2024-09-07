@@ -54,14 +54,13 @@ def buildBCHOL(G: np.ndarray, g: np.ndarray, C: np.ndarray, c: np.ndarray, N: in
             R_list.append(R_temp)
     Q=np.array(Q_list)
     R=np.array(R_list)
-    print(nx)
-    G1=np.zeros((N*(nx+nu),N*(nx+nu)))
-    for i in range(N):
-        qi=i*(nx+nu)
-        ri=qi+nx
-        G1[qi:qi+nx,qi:qi+nx]=Q[i]
-        G1[ri:ri+nu,ri:ri+nu]=R[i]
+
     #compare G1 to G
+    epsilon= 1e-5
+    if(np.allclose(G, G1[:g.size,:g.size], atol=epsilon)):
+         print("G reconstrucred succefully\n")
+    else:
+         print("DIFFERENT!\n")
 
     #preparing q_r as separate vector, add r=0 at the last timestep
     g=np.append(g,np.zeros(nu))
@@ -73,6 +72,8 @@ def buildBCHOL(G: np.ndarray, g: np.ndarray, C: np.ndarray, c: np.ndarray, N: in
     r=r.reshape(-1,nu)
     print("q ",q)
     print("r ",r)
+    
+    
 
     #check g reconstuction
     g_interleaved = []
@@ -82,11 +83,13 @@ def buildBCHOL(G: np.ndarray, g: np.ndarray, C: np.ndarray, c: np.ndarray, N: in
         g_interleaved.append(combined_row)
     g_reshaped = np.array(g_interleaved)
 
-    g_flattened = g_reshaped.flatten()
-
-
-    # Step 3: Flatten g_reshaped to get g
     g1 = g_reshaped.flatten()
+    
+
+    if(np.allclose(g1, g, atol=epsilon)):
+         print("g reconstrucred succefully\n")
+    else:
+         print("DIFFERENT!\n")
 
     #get A,B from C
     A_list =[] 
@@ -108,26 +111,40 @@ def buildBCHOL(G: np.ndarray, g: np.ndarray, C: np.ndarray, c: np.ndarray, N: in
     #add 0s at the last timestep
     A = np.concatenate((A,np.zeros((1,nx,nx))),axis=0)
     B=np.concatenate((B,np.zeros((1,nu,nx))),axis=0)
+    #negate both A and B (do I need to do it?)
+    A=-A
+    B=-B
 
-    #check C
-    C1 = np.zeros((N*nx,N*(nx+nu)))
+
+    #check C - reconstruct A
+    C1 = np.zeros((N*nx+nx,N*(nx+nu)))
+    A=-A
+    B=-B
     B=B.transpose(0,nx,nu)
-    for i in range(N):
+    for i in range(N-1):
         row = nx+i*nx
         col =i*(nx+nu)
         C1[row:row+nx,col:col+nx]=A[i]
         C1[row:row+nx,col+nx]=B[i].flatten()
-
-    #negate both A and B
-#     A=-A
-#     B=-B
-
+    #add identitiy matrix
+    for i in range(N):
+         row =i*nx
+         col=i*(nx+nu)
+         C1[row:row+nx, col:col+nx]=np.eye(nx)
+    if(np.allclose(C1[:-2,:-1], C, atol=epsilon)):
+         print("C reconstrucred succefully\n")
+    else:
+         print("DIFFERENT!\n")
+    
     #get d (just copy c vector)
     d=c[:]
     d=d.reshape(-1,2)
-
+    print("d shape", d.shape)
+    print("c shape", c.shape)
 
     breakpoint()
+
+
     BCHOL(N,nu,nx,Q,R,q,r,A,B,d)
     print("soln:\n")
 #     for i in range(N):       
