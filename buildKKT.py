@@ -6,7 +6,7 @@ from scipy.linalg.blas import dgemv,dgemm
 """
 Call this function to build KKT matrix and kkt vector 
 """
-def rebuildKKT(N,nu, nx,
+def buildKKT(N,nu, nx,
                   Q,R,q,r,A,B,d): 
     assert N==len(Q)
     assert nx==Q[0].shape[1]

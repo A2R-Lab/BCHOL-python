@@ -1,3 +1,4 @@
 from .BCHOL import BCHOL
-from .solve_build import buildBCHOL
+from .buildBCHOL import buildBCHOL
+from .buildKKT import buildKKT
 from .utils import *
