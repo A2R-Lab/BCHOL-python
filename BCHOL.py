@@ -1,4 +1,4 @@
-from .utils import *
+from utils import *
 import numpy as np
 import math
 import copy
@@ -117,13 +117,16 @@ def BCHOL(knot_points,control_size, state_size,
             updateShur(F_state,F_input,F_lambda,index,k,level,upper_level,
                                        calc_lambda,knot_points,sol=True,d=d,q=q,r=r)
 
-#DELETE LATER
-#   print("Done with rsLQR, soln:\n")
-#   for i in range(knot_points):
-#         print(f"d_{i} {d[i]}") #lambdas
-#         print(f"q_{i}  {q[i]}") #x vector
-#         print(f"r_{i} {r[i]}") #u vector
-
+#construct dxul
+  dxul = np.zeros(knot_points*(state_size*2+control_size))
+  for i in range(knot_points):
+        start = i*(state_size*2+control_size)
+        dxul[start:start+state_size] = q[i]
+        start+=state_size
+        dxul[start:start+control_size] = r[i]
+        start+=control_size
+        dxul[start:start+state_size] = d[i]
+  print(dxul)
 
 
 
