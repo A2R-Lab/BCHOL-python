@@ -162,25 +162,7 @@ def buildBCHOL(G: np.ndarray, g: np.ndarray, C: np.ndarray, c: np.ndarray, N: in
     d=c.reshape(-1,2)
 
     #check that you can reconstruct KKT
-#     KKT2,kkt2 = buildKKT.buildKKT(N,nu, nx,Q,R,q,r,A,B,d)
-    KKT2,kkt2 = buildKKT.buildKKT(N,nu, nx,Q,R,q,r,A,B,d,C,c,G,g,KKT)
-
-    close_elements = np.isclose(KKT, KKT2, rtol=1e-5, atol=1e-8)
-
-    if np.allclose(KKT[0], KKT2[0]):
-         print("DONE!")
-    else:
-         print("WRONG")
-         not_close_indices = ~np.isclose(KKT[0], KKT2[0][:-1])
-
-    # Print the indices and the corresponding values in both arrays
-         print("Indices where elements are not close:")
-         for idx, (val1, val2) in enumerate(zip(KKT[0], KKT2[0][:-1])):
-               if not_close_indices[idx]:
-                    print(f"Index: {idx}, KKT[0]: {val1}, KKT2[0]: {val2}")
-
-    breakpoint()
-
+    KKT2,kkt2 = buildKKT.buildKKT(N,nu, nx,Q,R,q,r,A,B,d)
 
     BCHOL(N,nu,nx,Q,R,q,r,A,B,d)
     print("soln:\n")
