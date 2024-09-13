@@ -12,6 +12,7 @@ INIT = False
 
 #function specific imports
 from BCHOL import BCHOL
+from buildKKT import buildKKT
 
 
 
@@ -37,8 +38,6 @@ if file_type == 'json':
         x0 = data['x0']
         lqrdata = data['lqrdata']
         soln = np.array(data['soln']).flatten()
-        print("nhorizon", nhorizon)
-        print("x0", x0)
 
         # Initialize arrays for each variable
         Q_list = []
@@ -106,10 +105,13 @@ if(INIT):
         print(f"r {r[i]}")
         print(f"d {d[i]}")
 
+#check against KKT
+buildKKT(nhorizon,ninputs, nstates,Q,R,q,r,A,B,d)
+
 #imitating calling the kernel
 BCHOL(nhorizon,ninputs,nstates,Q,R,q,r,A,B,d)
 #DELETE LATER
-print("soln:\n")
+# print("soln:\n")
 for i in range(nhorizon):
         print(f"d_{i} {d[i]}") #lambdas
         print(f"q_{i}  {q[i]}") #x vector

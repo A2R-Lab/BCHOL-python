@@ -84,7 +84,9 @@ def BCHOL(knot_points,control_size, state_size,
             i = (b_id*4)+t_id
             k = i//upper_levels
             upper_level = level+1+(i%upper_levels)
+            
             index = getIndexFromLevel(knot_points,depth,level,k,binary_tree)
+            print(f"index {index}, k {k}, binary {binary_tree}")
             calc_lambda  = shouldCalcLambda(index, k,binary_tree)
             g = k+knot_points*upper_level
             updateShur(F_state,F_input,F_lambda,index,k,level,upper_level,calc_lambda,knot_points)
@@ -119,14 +121,18 @@ def BCHOL(knot_points,control_size, state_size,
 
 #construct dxul
   dxul = np.zeros(knot_points*(state_size*2+control_size))
+#first add all x,u (q,r)
+  lambda_st = knot_points*(state_size+control_size)
   for i in range(knot_points):
-        start = i*(state_size*2+control_size)
+        start = i*(state_size+control_size)
         dxul[start:start+state_size] = q[i]
         start+=state_size
         dxul[start:start+control_size] = r[i]
-        start+=control_size
-        dxul[start:start+state_size] = d[i]
-  print(dxul)
+        l_start = lambda_st+i*state_size 
+        dxul[l_start:l_start+state_size] = d[i]
+  with np.printoptions(precision=4, suppress=True):
+    print(dxul)
+#   print(dxul)
 
 
 
