@@ -1,4 +1,4 @@
-from .utils import *
+from utils import *
 import numpy as np
 import math
 import copy
@@ -129,27 +129,7 @@ def BCHOL(knot_points,control_size, state_size,
         dxul[start:start+control_size] = r[i]
         l_start = lambda_st+i*state_size 
         dxul[l_start:l_start+state_size] = d[i]
+  dxul=dxul[:-control_size]
+  dxul=dxul.reshape(knot_points*(state_size)+(knot_points-1)*(state_size+control_size)+state_size,1)
   with np.printoptions(precision=4, suppress=True):
     print(dxul)
-#   print(dxul)
-
-
-
-
-        
-
-
-
-     
-     
-
-     
-     
-   
-      
-
-           
-
-
-
-

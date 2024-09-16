@@ -106,14 +106,14 @@ if(INIT):
         print(f"d {d[i]}")
 
 #check against KKT
-buildKKT(nhorizon,ninputs, nstates,Q,R,q,r,A,B,d)
+buildKKT(nhorizon,ninputs, nstates,Q,R,q,r,A,B,d,False)
 
 #imitating calling the kernel
 BCHOL(nhorizon,ninputs,nstates,Q,R,q,r,A,B,d)
 #DELETE LATER
 # print("soln:\n")
-for i in range(nhorizon):
-        print(f"d_{i} {d[i]}") #lambdas
-        print(f"q_{i}  {q[i]}") #x vector
-        print(f"r_{i} {r[i]}") #u vector
+# for i in range(nhorizon):
+#         print(f"d_{i} {d[i]}") #lambdas
+#         print(f"q_{i}  {q[i]}") #x vector
+#         print(f"r_{i} {r[i]}") #u vector
    

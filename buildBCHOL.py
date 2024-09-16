@@ -162,11 +162,11 @@ def buildBCHOL(G: np.ndarray, g: np.ndarray, C: np.ndarray, c: np.ndarray, N: in
     d=c.reshape(-1,2)
 
     #check that you can reconstruct KKT
-    KKT2,kkt2 = buildKKT.buildKKT(N,nu, nx,Q,R,q,r,A,B,d)
+    # KKT2,kkt2 = buildKKT.buildKKT(N,nu, nx,Q,R,q,r,A,B,d,True)
 
     BCHOL(N,nu,nx,Q,R,q,r,A,B,d)
-    print("soln:\n")
-    for i in range(N):       
-        print(f"d_{i} {d[i]}") #lambdas
-        print(f"q_{i}  {q[i]}") #x vector
-        print(f"r_{i} {r[i]}") #u vector
+#     print("soln:\n")
+#     for i in range(N):       
+#         print(f"d_{i} {d[i]}") #lambdas
+#         print(f"q_{i}  {q[i]}") #x vector
+#         print(f"r_{i} {r[i]}") #u vector
