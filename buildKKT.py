@@ -68,10 +68,7 @@ def buildKKT(N,nu, nx,Q,R,q,r,A,B,d,neg):
     kkt = np.concatenate((g, c))
     kkt = kkt.reshape(dim-nu,1)
 
-    print("KKT \n")
-    print(KKT)
-    print("kkt\n")
-    print(kkt)
+
     dxul = np.linalg.solve(KKT, kkt)
     print("OFFICIAL SOLN!")
     with np.printoptions(precision=4, suppress=True):

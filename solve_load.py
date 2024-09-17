@@ -97,7 +97,8 @@ ninputs=int(ninputs)
 #INIT looks identical to the solve_lqr.cuh, 3D array use A[i] to get the matrix
 if(INIT):
     for i in range(nhorizon):
-        print(f"A matrix \n:{i} , {A[i]}")
+        print("i: ",i)
+        print(f"A matrix \n {A[i]}")
         print(f"B matrix: \n{B[i]}")
         print(f"Q matrix \n:{Q[i]}")
         print(f"R matrix: \n{R[i]}")
@@ -108,7 +109,9 @@ if(INIT):
 #check against KKT
 buildKKT(nhorizon,ninputs, nstates,Q,R,q,r,A,B,d,False)
 
+
 #imitating calling the kernel
+print("starting bchol\n")
 BCHOL(nhorizon,ninputs,nstates,Q,R,q,r,A,B,d)
 #DELETE LATER
 # print("soln:\n")
