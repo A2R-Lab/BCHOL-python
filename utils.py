@@ -4,15 +4,36 @@ import copy
 import scipy.linalg as linalg
 from scipy.linalg.blas import dgemv,dgemm
 
-def rebuildKKT(N,nu, nx,
-                  Q,R,q,r,A,B,d): 
+#checked - correct
+def buildBlocks(N,nu, nx,Q,R,q,r,A,B,d): 
+    """
+    Prepares the matrices to the right format tp build G,g,C,c blocks that will
+    later be used to build KKT and be solved via SQP
+
+    Parameters:
+    N(int) : Number of timesteps
+    nu(int): control
+    nx(int): states
+    Q: cost state matrix
+    R: control matrix,
+    q: cost vector
+    r: control vector
+    A: Dynamics matrix of states
+    B: Dynamics matrix of controls
+    d: affine term of dynamics
+
+
+    Outputs:
+    G (np.ndarray): A matrix of Q_R from pendulum problem .
+    g (np.ndarray): A combined vector of q_r
+    C (np.ndarray): A matrix of A_B and I, negated
+    c (np.ndarray): A d vector
+    """
     assert N==len(Q)
     assert nx==Q[0].shape[1]
     assert nu==R[0].shape[1] 
-    ####Check the dim
-    dim = N*(nx*2+nu)
-    KKT=np.zeros((dim,dim)) 
-    #####
+    n = nx + nu
+    
     #build G
     G=np.zeros((N*(nx+nu),N*(nx+nu)))
     for i in range(N):
@@ -20,7 +41,7 @@ def rebuildKKT(N,nu, nx,
         ri=qi+nx
         G[qi:qi+nx,qi:qi+nx]=Q[i]
         G[ri:ri+nu,ri:ri+nu]=R[i]
-
+        
     #build g
     g_interleaved = []
     for i in range(N):
@@ -30,12 +51,10 @@ def rebuildKKT(N,nu, nx,
     g_reshaped = np.array(g_interleaved)
     g= g_reshaped.flatten()
 
-    #rebuild C
-    C = np.zeros((N*nx+nx,N*(nx+nu)))
-    #check if you need to negate
+    C = np.zeros((N*nx,N*n))    
     A=-A
     B=-B
-    B=B.transpose(0,nx,nu)
+    B=B.transpose(0,2,1)
     for i in range(N-1):
         row = nx+i*nx
         col =i*(nx+nu)
@@ -43,28 +62,96 @@ def rebuildKKT(N,nu, nx,
         if(nu==1):
             C[row:row+nx,col+nx]=B[i].flatten()
         else:
-            C[row:row+nx,col+nx]=B[i]     
+            C[row:row+nx,col+nx:col+nx+nu]=B[i]    
+    
     #add identitiy matrix
     for i in range(N):
          row =i*nx
          col=i*(nx+nu)
          C[row:row+nx, col:col+nx]=np.eye(nx)
-    
-    c=d.reshape(-1,2)
+    c=d.flatten()
+    return G,g,C,c
+
+def buildBCHOL(G: np.ndarray, g: np.ndarray, C: np.ndarray, c: np.ndarray, N: int,nx: int, nu: int):
 
 
+    """
+    Prepares the matrices to the right format in order to launch LQR kernel
 
-    #figure BR later
-    # total_dynamics_intial_state_constraints = nx*N
-    # total_other_constraints = self.other_constraints.total_hard_constraints(x, u)
-    # total_constraints = total_dynamics_intial_state_constraints + total_other_constraints
-    # BR = np.zeros((total_constraints,total_constraints))
-    # build C   
-    # if rho != 0:
-    #         G += rho * np.eye(G.shape[0])
+    Parameters:
+    G (np.ndarray): A matrix of Q_R from pendulum problem .
+    g (np.ndarray): A combined vector of q_r
+    C (np.ndarray): A matrix of A_B and I, negated
+    c (np.ndarray): A d vector
 
-    KKT = np.hstack((np.vstack((G, C)),np.vstack((C.transpose(), BR))))
-    kkt = np.vstack((g, c))
+    Outputs:
+    N(int) : Number of timesteps
+    nu(int): control
+    nx(int): states
+    Q: cost state matrix
+    R: control matrix,
+    q: cost vector
+    r: control vector
+    A: Dynamics matrix of states
+    B: Dynamics matrix of controls
+    d: affine term of dynamics
+    """
+
+    #extract Q, R from G - CORRECT
+    Q_list=[]
+    R_list=[]
+    for i in range(N):
+         if(i!=N-1):
+              qi=i*(nx+nu)
+              ri=qi+nx
+              Q_temp=G[qi:qi+nx,qi:qi+nx]
+              R_temp = G[ri:ri+nu,ri:ri+nu]
+              Q_list.append(Q_temp)
+              R_list.append(R_temp)
+         else:
+            qi=i*(nx+nu)
+            ri=qi+nx
+            Q_temp=G[qi:qi+nx,qi:qi+nx]
+            R_temp = np.zeros((nu,nu))
+            Q_list.append(Q_temp)
+            R_list.append(R_temp)
+    Q=np.array(Q_list)
+    R=np.array(R_list)
+
+
+    #preparing q_r as separate vector, add r=0 at the last timestep
+    g_reshaped = g.reshape(-1, nx+nu)
+    q = g_reshaped[:, :nx].flatten()
+    q =q.reshape(-1,nx)
+    #extract r from g
+    r = g_reshaped[:,-nu:].flatten()
+    r=r.reshape(-1,nu)
+
+    #get A,B from C
+    A_list =[] 
+    B_list =[]
+    for i in range (N-1):
+            row = nx+i*nx
+            col =i*(nx+nu)
+            A_temp = C[row:row+nx,col:col+nx]
+            if(nu==1):
+                B_temp = C[row:row+nx,col+nx]
+            else:
+                B_temp = C[row:row+nx,col+nx:col+nx+nu]
+            A_list.append(A_temp)
+            B_list.append(B_temp)
+    A = np.array(A_list) 
+    B = np.array(B_list)
+    B=np.transpose(B, axes=(0,2,1))
+    #add 0s at the last timestep
+    A = np.concatenate((A,np.zeros((1,nx,nx))),axis=0)
+    B=np.concatenate((B,np.zeros((1,nu,nx))),axis=0)
+    #negate both A and B 
+    A=-A
+    B=-B
+
+    d=c.reshape(-1,nx)
+    return Q,R,q,r,A,B,d
 
 def is_choleskysafe(matrix):
     try:

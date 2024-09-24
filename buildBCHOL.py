@@ -103,11 +103,15 @@ def buildBCHOL(G: np.ndarray, g: np.ndarray, C: np.ndarray, c: np.ndarray, N: in
     #get A,B from C
     A_list =[] 
     B_list =[]
+    
     for i in range (N-1):
             row = nx+i*nx
             col =i*(nx+nu)
             A_temp = C[row:row+nx,col:col+nx]
-            B_temp = C[row:row+nx,col+nx]
+            if(nu==1):
+                B_temp = C[row:row+nx,col+nx]
+            else:
+                B_temp = C[row:row+nx,col+nx:col+nx+nu]
             A_list.append(A_temp)
             B_list.append(B_temp)
     A = np.array(A_list) 
@@ -146,7 +150,6 @@ def buildBCHOL(G: np.ndarray, g: np.ndarray, C: np.ndarray, c: np.ndarray, N: in
 #     else:
 #          print("C WRONG")
 #          breakpoint()
-   ##SEEMS LIKE EVERYTHING IS CORRECR BESIDES KKT
     BR = np.zeros((N*nx,N*nx))
     
 
