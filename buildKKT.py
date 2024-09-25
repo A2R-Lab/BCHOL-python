@@ -19,8 +19,7 @@ def buildKKT(N,nu, nx,Q,R,q,r,A,B,d,neg):
 
     G,g,C,c = buildBlocks(N,nu,nx,Q,R,q,r,A,B,d)
     BR = np.zeros((nx*N,nx*N))
-    #Get rid of the last timestep equals to 0 and build KKT,kkt
-    C=C[:,:-nu]
+    C=C[:,:]
     KKT = np.hstack((np.vstack((G[:-nu,:-nu], C)),np.vstack((C.transpose(), BR))))
     g=g[:-nu]
     kkt = np.concatenate((g, c))

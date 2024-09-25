@@ -51,7 +51,7 @@ def buildBlocks(N,nu, nx,Q,R,q,r,A,B,d):
     g_reshaped = np.array(g_interleaved)
     g= g_reshaped.flatten()
 
-    C = np.zeros((N*nx,N*n))    
+    C = np.zeros((N*nx,(N-1)*n+nx))    
     A=-A
     B=-B
     B=B.transpose(0,2,1)
