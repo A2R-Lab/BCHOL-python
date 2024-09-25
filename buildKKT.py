@@ -8,7 +8,7 @@ from utils import *
 """
 Call this function to build KKT matrix and kkt vector 
 """
-def buildKKT(N,nu, nx,Q,R,q,r,A,B,d,neg): 
+def buildKKT(N,nu, nx,Q,R,q,r,A,B,d): 
     assert N==len(Q)
     assert nx==Q[0].shape[1]
     assert nu==R[0].shape[1] 
@@ -23,13 +23,13 @@ def buildKKT(N,nu, nx,Q,R,q,r,A,B,d,neg):
     KKT = np.hstack((np.vstack((G[:-nu,:-nu], C)),np.vstack((C.transpose(), BR))))
     g=g[:-nu]
     kkt = np.concatenate((g, c))
-    kkt = kkt.reshape(dim-nu,1)
+    # kkt = kkt.reshape(dim-nu,1)
 
 
-    dxul = np.linalg.solve(KKT, kkt)
-    # print("OFFICIAL SOLN!")
-    # with np.printoptions(precision=4, suppress=True):
-    #     print(dxul)
+    dxul = np.linalg.solve(KKT, -kkt)
+    print("OFFICIAL SOLN!")
+    with np.printoptions(precision=4, suppress=True):
+        print(dxul)
 
     # print("BUILT KKT!!")
     return KKT,kkt

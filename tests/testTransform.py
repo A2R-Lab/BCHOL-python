@@ -116,7 +116,7 @@ class TestTransformFromJson(unittest.TestCase):
             if(i>0):
                 self.assertTrue(np.array_equal(-A[i-1], C[nx*i:nx*(i+1), states*(i-1):states*(i-1)+nx]), 
                         "A matrix is not correctly placed in C.")
-                self.assertTrue(np.array_equal(-B[i-1].T, C[nx*i:nx*(i+1), states*i-nu:states*i]), 
+                self.assertTrue(np.array_equal(B[i-1].T, C[nx*i:nx*(i+1), states*i-nu:states*i]), 
                         "B matrix is not correctly placed in C.")
         #check that c is correctly build
         for i in range(N):
@@ -132,12 +132,37 @@ class TestTransformFromJson(unittest.TestCase):
 
         # Step 2: Build KKT and compare results
         G, g, C, c = buildBlocks(N, nu, nx, Q, R, q, r, A, B, d)
-        # KKT,kkt = buildKKT(N,nu, nx,Q,R,q,r,A,B,d)
-
+        KKT,kkt = buildKKT(N,nu, nx,Q,R,q,r,A,B,d)
+        states=nu+nx
         #check that G is in the right place
-        # self.assertEqual(G, KKT[])
+        self.assertTrue(np.array_equal(G[:-nu,:-nu],KKT[:(N-1)*states+nx,:(N-1)*states+nx]), 
+                        "G matrix is not correctly placed in kkt.")
+        #check that C is in the right place
+        self.assertTrue(np.array_equal(C,KKT[(N-1)*states+nx:,:(N-1)*states+nx]), 
+                        "C matrix is not correctly placed in kkt.")
 
-        # Step 3: Print success
+        #check transposed C
+        self.assertTrue(np.array_equal(C.T,KKT[:(N-1)*states+nx,(N-1)*states+nx:]), 
+                        "C.T matrix is not correctly placed in kkt.")
+
+        #check all zeroes
+        self.assertTrue(np.all(KKT[(N-1)*states+nx:,(N-1)*states+nx:]==0), 
+                        "Zero matrix is not correctly placed in kkt.")
+
+        #Check the vector
+        # breakpoint()
+        #Check that g is in the right place
+        self.assertTrue(np.array_equal(g[:-nu],kkt[:(N-1)*states+nx]), 
+                        "g matrix is not correctly placed in kkt.")
+
+
+        #Check c is in the right place
+        self.assertTrue(np.array_equal(c,kkt[(N-1)*states+nx:]), 
+                        "g matrix is not correctly placed in kkt.")
+
+    # def test_kkt(self):
+    #     """Check KKT gives the same answer via np.linalg.solve"""
+
 
     
 

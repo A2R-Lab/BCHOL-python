@@ -53,7 +53,7 @@ def buildBlocks(N,nu, nx,Q,R,q,r,A,B,d):
 
     C = np.zeros((N*nx,(N-1)*n+nx))    
     A=-A
-    B=-B
+    B=B
     B=B.transpose(0,2,1)
     for i in range(N-1):
         row = nx+i*nx
@@ -148,7 +148,7 @@ def buildBCHOL(G: np.ndarray, g: np.ndarray, C: np.ndarray, c: np.ndarray, N: in
     B=np.concatenate((B,np.zeros((1,nu,nx))),axis=0)
     #negate both A and B 
     A=-A
-    B=-B
+    B=B
 
     d=c.reshape(-1,nx)
     return Q,R,q,r,A,B,d
