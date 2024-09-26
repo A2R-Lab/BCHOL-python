@@ -233,7 +233,7 @@ def solveLeaf(levels,index, nstates,nhorizon,s_Q,s_R,s_q,s_r,s_A,s_B,s_d,
         F_state_prev[:]=linalg.cho_solve((Q,lower_Q),F_state_prev,overwrite_b=True)
         
 
-#
+
 def factorInnerProduct(s_A,s_B, s_F_state,s_F_input,s_F_lambda,index,
                        fact_level,nhorizon,sol=False):
     C1_state=s_A[index]
@@ -270,7 +270,6 @@ def factorInnerProduct(s_A,s_B, s_F_state,s_F_input,s_F_lambda,index,
         S +=-1*F2_state
         s_F_lambda[(index+1)+nhorizon*fact_level] = S
 
-#Write tests
 def getIndexFromLevel(nhorizon,depth,level,i,levels):
     num_nodes=np.power(2,depth-level-1)
     leaf=i*num_nodes//nhorizon
@@ -289,7 +288,6 @@ def shouldCalcLambda(index, i,levels):
     is_start = i==left_start or i ==right_start
     return not is_start or i==0
 
-#Write tests
 def updateShur (s_F_state,s_F_input,s_F_lambda,index,i,level,
                 upper_level,calc_lambda,nhorizon,sol = False,d=None, q = None, r=None):
     F_state = s_F_state[i+nhorizon*level]

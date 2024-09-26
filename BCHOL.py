@@ -7,9 +7,6 @@ import scipy.linalg as linalg
 def BCHOL(knot_points,control_size, state_size,
                   Q,R,q,r,A,B,d):
   #KKT constants
-  states_sq = state_size * state_size
-  inputs_sq = control_size*control_size
-  inp_states = control_size*state_size
   depth = int(np.log2(knot_points))
   binary_tree =initBTlevel(knot_points)
 
@@ -24,7 +21,6 @@ def BCHOL(knot_points,control_size, state_size,
   F_input = np.zeros((knot_points*depth,control_size,state_size))
     
 
-  #make sure Q is not zero(add_epsln)
   epsln = 1e-6
   for i in range(Q.shape[0]):
      Q[i]+= np.diag(np.full(Q.shape[1], epsln))

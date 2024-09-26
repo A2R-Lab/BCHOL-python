@@ -107,7 +107,7 @@ if(INIT):
         print(f"d {d[i]}")
 
 #check against KKT
-buildKKT(nhorizon,ninputs, nstates,Q,R,q,r,A,B,d,False)
+buildKKT(nhorizon,ninputs, nstates,Q,R,q,r,A,B,d)
 
 
 #imitating calling the kernel
