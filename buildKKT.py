@@ -27,9 +27,9 @@ def buildKKT(N,nu, nx,Q,R,q,r,A,B,d):
 
 
     dxul = np.linalg.solve(KKT, -kkt)
-    print("OFFICIAL SOLN!")
-    with np.printoptions(precision=4, suppress=True):
-        print(dxul)
+    # print("NP LINALG SOLN!")
+    # with np.printoptions(precision=4, suppress=True):
+    #     print(dxul)
 
     # print("BUILT KKT!!")
     return KKT,kkt

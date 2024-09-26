@@ -11,9 +11,9 @@ def BCHOL(knot_points,control_size, state_size,
   binary_tree =initBTlevel(knot_points)
 
   #negate q_r and d vectors
-  q[:]=-q
-  r[:]= -r
-  d[:]= -d
+  q[:]=-q #state vector
+  r[:]= -r # input vector/ control vector
+  d[:]= -d #lambda /lagrange multiplies
 
   #Set F_lambda,F_state, and F_input
   F_lambda = np.zeros((knot_points*depth,state_size,state_size))
@@ -127,6 +127,7 @@ def BCHOL(knot_points,control_size, state_size,
         dxul[l_start:l_start+state_size] = d[i]
   dxul=dxul[:-control_size]
   dxul=dxul.reshape(knot_points*(state_size)+(knot_points-1)*(state_size+control_size)+state_size,1)
-  print("KKT soln BCHOL")
-  with np.printoptions(precision=4, suppress=True):
-    print(dxul)
+#   print("KKT soln BCHOL")
+#   with np.printoptions(precision=4, suppress=True):
+#     print(dxul)
+  return dxul

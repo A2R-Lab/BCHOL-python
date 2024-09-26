@@ -14,6 +14,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 # Function-specific imports
 from buildKKT import buildKKT
 from utils import buildBlocks, buildBCHOL
+from BCHOL import BCHOL
 
 # Constants
 FILE_TYPE = "json"
@@ -91,7 +92,7 @@ class TestTransformFromJson(unittest.TestCase):
         self.check_transform(Q, R, q, r, A, B, d, N, nx, nu)
 
         # Step 3: Print success
-        print("Passed blocks to LQR correctly\n")
+        print("\nG to Bchol and back is correct")
 
     def test_correctBlocks(self):
         # Step 1: Prepare data
@@ -122,7 +123,7 @@ class TestTransformFromJson(unittest.TestCase):
         for i in range(N):
             self.assertTrue(np.isclose(d[i], c[i*nx:(i+1)*nx]).all(), "d is not correctly placed in c block!")
 
-
+        print("Blocks G,C,g,c are built correctly\n")
 
     
     def test_kkt(self):
@@ -159,9 +160,26 @@ class TestTransformFromJson(unittest.TestCase):
         #Check c is in the right place
         self.assertTrue(np.array_equal(c,kkt[(N-1)*states+nx:]), 
                         "g matrix is not correctly placed in kkt.")
+        print("Blocks are correctly placed in KKT matrix\n")
 
-    # def test_kkt(self):
-    #     """Check KKT gives the same answer via np.linalg.solve"""
+    def test_soln(self):
+        """Check KKT gives the same answer via np.linalg.solve"""
+        Q, R, q, r, A, B, d, c, N, nx, nu = self.prepare_matrices(self.N, self.lqrdata)
+
+        # Step 2: Build KKT and compare results
+        G, g, C, c = buildBlocks(N, nu, nx, Q, R, q, r, A, B, d)
+        KKT,kkt = buildKKT(N,nu, nx,Q,R,q,r,A,B,d)
+        dxul =np.linalg.solve(KKT,kkt)
+        bchol = BCHOL(N, nu, nx, Q, R, q, r, A,B, d)
+        print("soln BCHOL\n")
+        with np.printoptions(precision=4, suppress=True):
+            print(bchol.flatten())
+        print("NP LINALG SOLN!\n")
+        with np.printoptions(precision=4, suppress=True):
+            print(dxul)
+        self.assertTrue(np.array_equal(dxul, bchol.flatten()), 
+                        "Solutions do not allign.")
+
 
 
     

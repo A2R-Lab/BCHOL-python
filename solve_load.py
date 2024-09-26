@@ -107,12 +107,13 @@ if(INIT):
         print(f"d {d[i]}")
 
 #check against KKT
-buildKKT(nhorizon,ninputs, nstates,Q,R,q,r,A,B,d)
-
+KKT,kkt =buildKKT(nhorizon,ninputs, nstates,Q,R,q,r,A,B,d)
+dxul = np.linalg.solve(KKT, -kkt)
 
 #imitating calling the kernel
 print("starting bchol\n")
-BCHOL(nhorizon,ninputs,nstates,Q,R,q,r,A,B,d)
+chol_dxul=BCHOL(nhorizon,ninputs,nstates,Q,R,q,r,A,B,d)
+
 #DELETE LATER
 # print("soln:\n")
 # for i in range(nhorizon):
