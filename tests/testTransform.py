@@ -18,7 +18,6 @@ from BCHOL import BCHOL
 
 # Constants
 FILE_TYPE = "json"
-INIT = False
 
 
 class TestTransformFromJson(unittest.TestCase):
