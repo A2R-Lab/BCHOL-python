@@ -1,0 +1,11 @@
+-Solve Leaf tests : done! (found D,E,a,c for Schur)
+
+-InnerProducts : computes inner products solely on the blocks corresponding to the states and controls at current and next time steps
+ - We calculate B_tag and b_tag
+ how to check this if not within np.dot/dgemm?
+
+-FctorizeBbar (we just have linalg.cho_factor), just computes cholesky fact of B tag and b_tag(this is in soln loop)
+
+-SolveBbar (just have cho_solve), solve cholesky fot y
+
+-UpdateSchur (maybe need to check updateShur?), solve x and z

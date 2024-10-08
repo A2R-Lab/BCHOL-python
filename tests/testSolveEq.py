@@ -19,12 +19,12 @@ from BCHOL import BCHOL
 
 # Constants
 FILE_TYPE = "json"
-INIT = False
 
 class TestSolveEq(unittest.TestCase):
 
     
     def setUp(self):
+        print("setup\n")
         # Setup can load data and other initializations
         self.file_name = os.path.join(os.path.dirname(os.path.dirname(__file__)), "lqr_prob.json")
         self.N, self.x0, self.lqrdata, self.soln = self.load_data(self.file_name)
@@ -68,7 +68,8 @@ class TestSolveEq(unittest.TestCase):
 
         return Q, R, q, r, A, B, d, c, N, nx, nu
     
-    def check_vector(self,N,q,r,d,qt,rt,dt,Qt,Rt,nx,nu):
+    #checking the solution vector after solveleaf
+    def check_vector_solveLeaf(self,N,q,r,d,qt,rt,dt,Qt,Rt,nx,nu):
         checkq=np.zeros((N,nx))
         checkr=np.zeros((N,nu))
         for ind in range(N):
@@ -79,7 +80,8 @@ class TestSolveEq(unittest.TestCase):
                 self.assertTrue(np.isclose(q[ind],checkq[ind]).all(), f"q is wrong at index {ind} !")
                 self.assertTrue(np.isclose(r[ind],checkr[ind]).all(), f"r is wrong at index {ind}!")
 
-    def check_AB(self,N,Q,R,A,B,F_state,F_input,depth,nx,nu):
+    #checking F_state, and F_input after solveLeaf
+    def check_AB_solveLeaf(self,N,Q,R,A,B,F_state,F_input,depth,nx,nu):
         checkState = np.zeros((N*depth,nx,nx))
         checkInput = np.zeros((N*depth,nu,nx))
         #check for N timesteps
@@ -90,12 +92,12 @@ class TestSolveEq(unittest.TestCase):
         self.assertTrue(np.isclose(F_input[2],checkInput[2]).all(), f"F_input\n {F_input[2]} is wrong at index {2}, {checkInput[2]}!")
 
 
-    def test_solveLeaf(self):
+    def test_solve(self):
         Qt, Rt, qt, rt, At, Bt, dt, ct, N, nx, nu = self.prepare_matrices(self.N, self.lqrdata)
 
         Q, R, q, r, A, B, d, c, N, nx, nu = self.prepare_matrices(self.N, self.lqrdata)
         """These lines are taken from BCHOL 9-29"""
-
+        print("HI\n")
         depth = int(np.log2(N))
         binary_tree =initBTlevel(N)
         #negate q_r and d vectors
@@ -109,9 +111,10 @@ class TestSolveEq(unittest.TestCase):
         for ind in range(N):
             solveLeaf(binary_tree,ind, nx,N,Q,R,q,r,A,B,d,F_lambda,F_state, F_input)
         """Checking q,r,d, against np.linalg.solve"""
-        self.check_vector(N,q,r,d,qt,rt,dt,Qt,Rt,nx,nu)
+        self.check_vector_solveLeaf(N,q,r,d,qt,rt,dt,Qt,Rt,nx,nu)
         """Now we also need to check Q\A, R\B"""
-        self.check_AB(N,Q,R,A,B,F_state, F_input,depth,nx,nu)
+        self.check_AB_solveLeaf(N,Q,R,A,B,F_state, F_input,depth,nx,nu)
+        print("Solve leaf passed\n")
 
         """Test big loop"""
         for level in range (depth):

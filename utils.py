@@ -102,7 +102,9 @@ def buildBCHOL(G: np.ndarray, g: np.ndarray, C: np.ndarray, c: np.ndarray, N: in
     R_list=[]
     for i in range(N):
          if(i!=N-1):
+              #row of Q
               qi=i*(nx+nu)
+              #row of R
               ri=qi+nx
               Q_temp=G[qi:qi+nx,qi:qi+nx]
               R_temp = G[ri:ri+nu,ri:ri+nu]
@@ -238,7 +240,9 @@ def factorInnerProduct(s_A,s_B, s_F_state,s_F_input,s_F_lambda,index,
                        fact_level,nhorizon,sol=False):
     C1_state=s_A[index]
     C1_input = s_B[index]
+    
     if sol: 
+        #perform matrix-vector multiplication if called with solution side
         F1_state = s_F_state[index]
         F1_input = s_F_input[index]
         F2_state = s_F_state[(index+1)]
@@ -246,25 +250,21 @@ def factorInnerProduct(s_A,s_B, s_F_state,s_F_input,s_F_lambda,index,
         # Perform dgemv operations
         # S[:] = dgemv(alpha=1, a=C1_state, x=F1_state, beta=-1, y=S, trans=1)
         S = np.dot(C1_state.T, F1_state) - S
-
-
         S[:] = dgemv(alpha=1, a=C1_input.T, x=F1_input, beta=1, y=S)
-
         S +=-1*F2_state
         s_F_lambda[index+1]=S
 
-
     else:
+        #perform matrix-matrix multiplication if called with matrix side
         lin_ind = index+(nhorizon*fact_level)
+        #Dtag
         F1_state = s_F_state[lin_ind]
         F1_input = s_F_input[lin_ind]
+        #Tag
         F2_state = s_F_state[(index+1)+nhorizon*fact_level]
         S = s_F_lambda[(index+1)+nhorizon*fact_level]
        
         # Perform dgemm operations
-        #HERES THE PROBLEM! check dgemm later
-        # S[:] = dgemm(alpha=1, a=C1_state.T, b=F1_state, beta=-1, c=S, trans_b=1)
-
         S = np.dot(C1_state.T, F1_state) - S
         S[:] = dgemm(alpha=1, a=C1_input.T, b=F1_input, beta=1, c=S)
         S +=-1*F2_state
@@ -294,7 +294,7 @@ def updateShur (s_F_state,s_F_input,s_F_lambda,index,i,level,
     F_input = s_F_input[i+nhorizon*level]
     F_lambda = s_F_lambda[i+nhorizon*level]
 
-
+    #for vector matrix mult
     if sol:
 
         f = d[index+1]
@@ -306,6 +306,7 @@ def updateShur (s_F_state,s_F_input,s_F_lambda,index,i,level,
         g_state[:]=dgemv(alpha=-1,a=F_state,x=f,beta=1,y=g_state)
         g_input[:]=dgemv(alpha=-1,a=F_input,x=f,beta=1,y=g_input)
 
+    #for matrix matrix mult
     else:
         lin_index = index+1+(nhorizon*upper_level)
         f = s_F_lambda[lin_index]

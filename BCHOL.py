@@ -1,4 +1,4 @@
-from utils import *
+from  utils import *
 import numpy as np
 import math
 import copy
@@ -85,7 +85,6 @@ def BCHOL(knot_points,control_size, state_size,
             calc_lambda  = shouldCalcLambda(index, k,binary_tree)
             g = k+knot_points*upper_level
             updateShur(F_state,F_input,F_lambda,index,k,level,upper_level,calc_lambda,knot_points)
-
    #soln vector loop, use factorized matrices for a fast solver
   for level in range (depth):
      L = int(np.power(2.0,(depth-level-1)))
@@ -117,12 +116,13 @@ def BCHOL(knot_points,control_size, state_size,
 #construct dxul
   dxul = np.zeros(knot_points*(state_size*2+control_size))
 #first add all x,u (q,r)
-  lambda_st = knot_points*(state_size+control_size)
+  lambda_st = (knot_points-1)*(state_size+control_size)+state_size
   for i in range(knot_points):
         start = i*(state_size+control_size)
         dxul[start:start+state_size] = q[i]
         start+=state_size
-        dxul[start:start+control_size] = r[i]
+        if(i!=knot_points-1):
+         dxul[start:start+control_size] = r[i]
         l_start = lambda_st+i*state_size 
         dxul[l_start:l_start+state_size] = d[i]
   dxul=dxul[:-control_size]

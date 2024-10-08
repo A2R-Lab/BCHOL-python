@@ -109,12 +109,16 @@ if(INIT):
 #check against KKT
 KKT,kkt =buildKKT(nhorizon,ninputs, nstates,Q,R,q,r,A,B,d)
 dxul = np.linalg.solve(KKT, -kkt)
+with np.printoptions(precision=4, suppress=True):
+    print(dxul)
 
 #imitating calling the kernel
-print("starting bchol\n")
 chol_dxul=BCHOL(nhorizon,ninputs,nstates,Q,R,q,r,A,B,d)
+print("returned bchol dxul\n")
+with np.printoptions(precision=4, suppress=True):
+    print(chol_dxul)
 
-#DELETE LATER
+# #DELETE LATER
 # print("soln:\n")
 # for i in range(nhorizon):
 #         print(f"d_{i} {d[i]}") #lambdas
