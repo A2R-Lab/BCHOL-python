@@ -38,3 +38,4 @@ def buildKKT(N,nu, nx,Q,R,q,r,A,B,d):
 
     # print("BUILT KKT!!")
     return KKT,kkt
+

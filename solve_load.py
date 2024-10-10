@@ -13,6 +13,7 @@ INIT = False
 #function specific imports
 from BCHOL import BCHOL
 from buildKKT import buildKKT
+from utils import buildBCHOL_KKT
 
 
 
@@ -107,11 +108,13 @@ if(INIT):
         print(f"d {d[i]}")
 
 #check against KKT
-KKT,kkt =buildKKT(nhorizon,ninputs, nstates,Q,R,q,r,A,B,d)
-dxul = np.linalg.solve(KKT, -kkt)
-with np.printoptions(precision=4, suppress=True):
-    print(dxul)
-
+# KKT,kkt =buildKKT(nhorizon,ninputs, nstates,Q,R,q,r,A,B,d)
+# dxul = np.linalg.solve(KKT, -kkt)
+# with np.printoptions(precision=4, suppress=True):
+#     print(dxul)
+#check against BCHOL_KKT
+KKT_bchol = buildBCHOL_KKT(nhorizon,ninputs, nstates,Q,R,q,r,A,B,d)
+breakpoint()
 #imitating calling the kernel
 chol_dxul=BCHOL(nhorizon,ninputs,nstates,Q,R,q,r,A,B,d)
 print("returned bchol dxul\n")

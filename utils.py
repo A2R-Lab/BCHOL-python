@@ -144,16 +144,53 @@ def buildBCHOL(G: np.ndarray, g: np.ndarray, C: np.ndarray, c: np.ndarray, N: in
             B_list.append(B_temp)
     A = np.array(A_list) 
     B = np.array(B_list)
-    B=np.transpose(B, axes=(0,2,1))
+    if(B.ndim==3):
+        B=np.transpose(B, axes=(0,2,1))
     #add 0s at the last timestep
     A = np.concatenate((A,np.zeros((1,nx,nx))),axis=0)
-    B=np.concatenate((B,np.zeros((1,nu,nx))),axis=0)
-    #negate both A and B 
+    zeros = np.zeros((nu, B.shape[1]))
+    if(B.ndim==3):
+        B=np.concatenate((B,np.zeros((1,nu,nx))),axis=0)
+    else:
+        B=np.append(B,zeros,axis=0)
+    #negate both A and B (DOUBLE CHECK!)
     A=-A
     B=B
 
     d=c.reshape(-1,nx)
     return Q,R,q,r,A,B,d
+
+def buildBCHOL_KKT(N,nu, nx,Q,R,q,r,A,B,d):
+    assert N==len(Q)
+    assert nx==Q[0].shape[1]
+    assert nu==R[0].shape[1] 
+    n=nx+nu
+    KKT=np.zeros(((N-1)*n+nx+(N*nx),(N-1)*n+nx+(N*nx)))
+    kkt = np.zeros(((N-1)*n+nx+(N*nx)))
+    #build each rearranged BCHOL block for matrix
+    block_step = nx*2+nu
+    for i in range (N-1):
+        qi=i*block_step
+        KKT[qi:qi+nx,qi:qi+nx]=Q[i]
+        KKT[qi+nx:qi+nx+nu,qi+nx:qi+nx+nu]=R[i]
+        ai = qi+nx+nu
+        #add A to the matrix
+        KKT[ai:ai+nx,qi:qi+nx]=A[i]
+        #add B
+        KKT[ai:ai+nx, qi+nx:qi+nx+nu] = B[i].T
+        #add Transposed A
+        KKT[qi:qi+nx, ai:ai+nx]=A[i].T
+        #double checkB dimensions
+        KKT[qi+nx:qi+nx+nu,ai:ai+nx]=B[i]
+        #add -I matrix
+        KKT[ai:ai+nx,qi+block_step:qi+block_step+nx]=-np.eye((nx))
+        KKT[qi+block_step:qi+block_step+nx,ai:ai+nx]=-np.eye((nx))
+    #for the last time step add only Q and R
+    last_i = (N-1)*block_step
+    KKT[last_i:last_i+nx,last_i:last_i+nx]=Q[N-1]
+    KKT[last_i+nx:last_i+nx+nu,last_i+nx:last_i+nx+nu]=R[N-1]
+
+    return KKT
 
 def is_choleskysafe(matrix):
     try:
