@@ -3,7 +3,12 @@ import math
 import copy
 import scipy.linalg as linalg
 from scipy.linalg.blas import dgemv,dgemm
-from utils import *
+try:
+    # Attempt relative import (for when the file is part of a package)
+    from .utils import *
+except ImportError:
+    # Fallback to absolute import (for when running as a standalone script)
+    from utils import *
 
 """
 Call this function to build KKT matrix and kkt vector 

@@ -9,3 +9,7 @@
 -SolveBbar (just have cho_solve), solve cholesky fot y
 
 -UpdateSchur (maybe need to check updateShur?), solve x and z
+
+OCT 10:::
+-- check matrix structure for small example (N=2/N=4/N=1?)
+--call np.linalg on traditional KKT, on BCHOl and on BCHOL matrix

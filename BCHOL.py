@@ -1,8 +1,13 @@
-from  utils import *
 import numpy as np
 import math
 import copy
 import scipy.linalg as linalg
+try:
+    # Attempt relative import (for when the file is part of a package)
+    from .utils import *
+except ImportError:
+    # Fallback to absolute import (for when running as a standalone script)
+    from utils import *
 
 def BCHOL(knot_points,control_size, state_size,
                   Q,R,q,r,A,B,d):
