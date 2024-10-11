@@ -189,6 +189,9 @@ def buildBCHOL_KKT(N,nu, nx,Q,R,q,r,A,B,d):
     last_i = (N-1)*block_step
     KKT[last_i:last_i+nx,last_i:last_i+nx]=Q[N-1]
     KKT[last_i+nx:last_i+nx+nu,last_i+nx:last_i+nx+nu]=R[N-1]
+    
+    #now build the kkt vector
+
 
     return KKT
 
