@@ -108,13 +108,16 @@ if(INIT):
         print(f"d {d[i]}")
 
 #check against KKT
-# KKT,kkt =buildKKT(nhorizon,ninputs, nstates,Q,R,q,r,A,B,d)
-# dxul = np.linalg.solve(KKT, -kkt)
-# with np.printoptions(precision=4, suppress=True):
-#     print(dxul)
+KKT,kkt =buildKKT(nhorizon,ninputs, nstates,Q,R,q,r,A,B,d)
+dxul = np.linalg.solve(KKT, -kkt)
+print("Traditional KKT,np soln\n")
+with np.printoptions(precision=4, suppress=True):
+    print(dxul)
 #check against BCHOL_KKT
-KKT_bchol = buildBCHOL_KKT(nhorizon,ninputs, nstates,Q,R,q,r,A,B,d)
-breakpoint()
+KKT_bchol,kkt_bchol = buildBCHOL_KKT(nhorizon,ninputs, nstates,Q,R,q,r,A,B,d)
+dxul_bchol = np.linalg.solve(KKT_bchol, -kkt_bchol)
+with np.printoptions(precision=4, suppress=True):
+    print(dxul_bchol)
 #imitating calling the kernel
 chol_dxul=BCHOL(nhorizon,ninputs,nstates,Q,R,q,r,A,B,d)
 print("returned bchol dxul\n")
@@ -122,9 +125,9 @@ with np.printoptions(precision=4, suppress=True):
     print(chol_dxul)
 
 # #DELETE LATER
-# print("soln:\n")
-# for i in range(nhorizon):
-#         print(f"d_{i} {d[i]}") #lambdas
-#         print(f"q_{i}  {q[i]}") #x vector
-#         print(f"r_{i} {r[i]}") #u vector
+print("soln:\n")
+for i in range(nhorizon):
+        print(f"d_{i} {d[i]}") #lambdas
+        print(f"q_{i}  {q[i]}") #x vector
+        print(f"r_{i} {r[i]}") #u vector
    

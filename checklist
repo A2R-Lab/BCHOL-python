@@ -15,3 +15,7 @@ OCT 10:::
 --call np.linalg on traditional KKT, on BCHOl and on BCHOL matrix
 
 //Adding BCHOL inside solveKKTSystem - adding 0 to g
+
+
+Oct 14::
+--building the matrix for example and getting the same answer

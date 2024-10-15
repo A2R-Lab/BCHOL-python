@@ -169,8 +169,13 @@ def buildBCHOL_KKT(N,nu, nx,Q,R,q,r,A,B,d):
     kkt = np.zeros(((N-1)*n+nx+(N*nx)))
     #build each rearranged BCHOL block for matrix
     block_step = nx*2+nu
+    #add a minus identity on the left of Q
+    KKT[nx:nx+nx,:nx] = -np.eye((nx))
+    #add a minus identity on top of Q
+    KKT[:nx,nx:nx+nx]=-np.eye((nx))
     for i in range (N-1):
-        qi=i*block_step
+        #nx is counting for minus identity
+        qi=(i*block_step)+nx
         KKT[qi:qi+nx,qi:qi+nx]=Q[i]
         KKT[qi+nx:qi+nx+nu,qi+nx:qi+nx+nu]=R[i]
         ai = qi+nx+nu
@@ -186,14 +191,23 @@ def buildBCHOL_KKT(N,nu, nx,Q,R,q,r,A,B,d):
         KKT[ai:ai+nx,qi+block_step:qi+block_step+nx]=-np.eye((nx))
         KKT[qi+block_step:qi+block_step+nx,ai:ai+nx]=-np.eye((nx))
     #for the last time step add only Q and R
-    last_i = (N-1)*block_step
+    last_i = (N-1)*block_step+nx
     KKT[last_i:last_i+nx,last_i:last_i+nx]=Q[N-1]
-    KKT[last_i+nx:last_i+nx+nu,last_i+nx:last_i+nx+nu]=R[N-1]
     
+
     #now build the kkt vector
+    for i in range(N-1):
+        kkt[block_step*i:block_step*i+nx]=d[i]
+        kkt[block_step*i+nx:block_step*i+(2*nx)]=q[i]
+        kkt[block_step*i+2*nx:block_step*i+2*nx+nu]=r[i]
+
+    kkt[block_step*(N-1):block_step*(N-1)+nx]=d[N-1]
+    kkt[block_step*(N-1)+nx:block_step*(N-1)+2*nx]=q[N-1]
+
+                    
 
 
-    return KKT
+    return KKT,kkt
 
 def is_choleskysafe(matrix):
     try:
