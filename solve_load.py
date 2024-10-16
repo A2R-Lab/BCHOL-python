@@ -96,6 +96,7 @@ nstates= int(nstates)
 ninputs=int(ninputs)
 
 #INIT looks identical to the solve_lqr.cuh, 3D array use A[i] to get the matrix
+#B is transposed here - fix later
 if(INIT):
     for i in range(nhorizon):
         print("i: ",i)
@@ -106,7 +107,8 @@ if(INIT):
         print(f"q  {q[i]}")
         print(f"r {r[i]}")
         print(f"d {d[i]}")
-
+#check d0=x0
+print("d0 ", d[0]) 
 #check against KKT
 KKT,kkt =buildKKT(nhorizon,ninputs, nstates,Q,R,q,r,A,B,d)
 dxul = np.linalg.solve(KKT, -kkt)
@@ -116,16 +118,17 @@ with np.printoptions(precision=4, suppress=True):
 #check against BCHOL_KKT
 KKT_bchol,kkt_bchol = buildBCHOL_KKT(nhorizon,ninputs, nstates,Q,R,q,r,A,B,d)
 dxul_bchol = np.linalg.solve(KKT_bchol, -kkt_bchol)
+print("Rearranged KKT, np soln\n")
 with np.printoptions(precision=4, suppress=True):
     print(dxul_bchol)
 #imitating calling the kernel
 chol_dxul=BCHOL(nhorizon,ninputs,nstates,Q,R,q,r,A,B,d)
-print("returned bchol dxul\n")
+print("returned bchol dxul soln in the form of q,r, all lambdas later\n")
 with np.printoptions(precision=4, suppress=True):
     print(chol_dxul)
 
 # #DELETE LATER
-print("soln:\n")
+print("soln as in Brian's code order:\n")
 for i in range(nhorizon):
         print(f"d_{i} {d[i]}") #lambdas
         print(f"q_{i}  {q[i]}") #x vector

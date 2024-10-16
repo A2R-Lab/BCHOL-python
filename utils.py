@@ -34,41 +34,44 @@ def buildBlocks(N,nu, nx,Q,R,q,r,A,B,d):
     assert nu==R[0].shape[1] 
     n = nx + nu
     
-    #build G
+    #build G,g
     G=np.zeros((N*(nx+nu),N*(nx+nu)))
+    g_interleaved = []
     for i in range(N):
         qi=i*(nx+nu)
         ri=qi+nx
         G[qi:qi+nx,qi:qi+nx]=Q[i]
         G[ri:ri+nu,ri:ri+nu]=R[i]
         
-    #build g
-    g_interleaved = []
-    for i in range(N):
-    # Combine each row of q and r
-        combined_row = np.hstack([q[i], r[i]])
+        qk = q[i]# + Q[i]*x[i]
+        rk = r[i]# + R[i]*u[i]
+        combined_row = np.hstack([qk, rk])
         g_interleaved.append(combined_row)
     g_reshaped = np.array(g_interleaved)
     g= g_reshaped.flatten()
 
     C = np.zeros((N*nx,(N-1)*n+nx))    
-    A=-A
+    A=A
     B=B
     B=B.transpose(0,2,1)
     for i in range(N-1):
         row = nx+i*nx
         col =i*(nx+nu)
-        C[row:row+nx,col:col+nx]=A[i]
+        C[row:row+nx,col:col+nx]=A[i].transpose()
         if(nu==1):
             C[row:row+nx,col+nx]=B[i].flatten()
         else:
             C[row:row+nx,col+nx:col+nx+nu]=B[i]    
-    
+
     #add identitiy matrix
-    for i in range(N):
+    for i in range(1,N):
          row =i*nx
          col=i*(nx+nu)
-         C[row:row+nx, col:col+nx]=np.eye(nx)
+         C[row:row+nx, col:col+nx]=-np.eye(nx)
+    
+    #add first identity
+    C[0:nx,0:nx] = -np.eye(nx)
+    
     c=d.flatten()
     return G,g,C,c
 
@@ -148,13 +151,14 @@ def buildBCHOL(G: np.ndarray, g: np.ndarray, C: np.ndarray, c: np.ndarray, N: in
         B=np.transpose(B, axes=(0,2,1))
     #add 0s at the last timestep
     A = np.concatenate((A,np.zeros((1,nx,nx))),axis=0)
+    #need to transpose A as well
     zeros = np.zeros((nu, B.shape[1]))
     if(B.ndim==3):
         B=np.concatenate((B,np.zeros((1,nu,nx))),axis=0)
     else:
         B=np.append(B,zeros,axis=0)
     #negate both A and B (DOUBLE CHECK!)
-    A=-A
+    A=A
     B=B
 
     d=c.reshape(-1,nx)
