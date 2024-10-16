@@ -135,4 +135,4 @@ def BCHOL(knot_points,control_size, state_size,
 #   print("KKT soln BCHOL")
 #   with np.printoptions(precision=4, suppress=True):
 #     print(dxul)
-  return dxul
+  return dxul.flatten()

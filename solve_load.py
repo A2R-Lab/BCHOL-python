@@ -13,7 +13,6 @@ INIT = False
 #function specific imports
 from BCHOL import BCHOL
 from buildKKT import buildKKT
-from utils import buildBCHOL_KKT
 
 
 
@@ -115,12 +114,7 @@ dxul = np.linalg.solve(KKT, -kkt)
 print("Traditional KKT,np soln\n")
 with np.printoptions(precision=4, suppress=True):
     print(dxul)
-#check against BCHOL_KKT
-KKT_bchol,kkt_bchol = buildBCHOL_KKT(nhorizon,ninputs, nstates,Q,R,q,r,A,B,d)
-dxul_bchol = np.linalg.solve(KKT_bchol, -kkt_bchol)
-print("Rearranged KKT, np soln\n")
-with np.printoptions(precision=4, suppress=True):
-    print(dxul_bchol)
+
 #imitating calling the kernel
 chol_dxul=BCHOL(nhorizon,ninputs,nstates,Q,R,q,r,A,B,d)
 print("returned bchol dxul soln in the form of q,r, all lambdas later\n")
