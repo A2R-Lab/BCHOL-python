@@ -24,17 +24,18 @@ def BCHOL(knot_points,control_size, state_size,
   F_lambda = np.zeros((knot_points*depth,state_size,state_size))
   F_state = np.zeros((knot_points*depth,state_size,state_size))
   F_input = np.zeros((knot_points*depth,control_size,state_size))
-    
 
   epsln = 1e-6
   for i in range(Q.shape[0]):
      Q[i]+= np.diag(np.full(Q.shape[1], epsln))
+     R[i]+=np.diag(np.full(R.shape[1], epsln))
      
   for ind in range (knot_points):
       solveLeaf(binary_tree,ind, state_size,knot_points,Q,R,q,r,A,B,d,F_lambda,F_state, F_input)
 
  #Starting the factorization of recursive algorithm
   for level in range (depth):
+
       #get the indxs for curr level
       indx_atlevel =getValuesAtLevel(binary_tree,level)
 
@@ -44,10 +45,13 @@ def BCHOL(knot_points,control_size, state_size,
       upper_levels = cur_depth-1
       num_factors = knot_points*upper_levels
       num_perblock = num_factors//L
+
+      # print(f"level {level}, leaves {L}\n")
  
       #calc inner products Bbar and bbar (to solve y in Schur)
       for b_ind in range (L):
          for t_ind in range(cur_depth):
+            # print(f"calcinner {level}\n")
             ind = b_ind * cur_depth + t_ind
             leaf = ind // cur_depth
             upper_level = level + (ind % cur_depth)
@@ -56,32 +60,42 @@ def BCHOL(knot_points,control_size, state_size,
 
       #cholesky fact for Bbar/bbar 
       for leaf in range (L):
+         # print(f"cholfact {level}\n")
          index = int(np.power(2.0, level)) * (2 * leaf + 1) - 1
          lin_ind = index + knot_points * level
+         
          if(is_choleskysafe(F_lambda[lin_ind+1])):
+         
             F_lambda[lin_ind+1]=linalg.cho_factor(F_lambda[lin_ind+1],lower =True)[0]
+
          else:
             print(f"Can't factor Cholesky {lin_ind} :\n")
             print(F_lambda[lin_ind])
 
-      #solve with Chol factor for y  SHUR compliment
+      #solve with Chol solve for y  SHUR compliment
       for b_id in range(L):
          for t_id in range(upper_levels):
+            # print(f"chol solve {level}\n")
             i = b_id*upper_levels+t_id
             leaf = i//upper_levels
             upper_level = level+1+(i%upper_levels)
             lin_ind = int(np.power(2,level)*(2*leaf+1))
+            # print(f"lin_ind {lin_ind}, sbar {(lin_ind)+knot_points*level}")
             Sbar = F_lambda[(lin_ind)+knot_points*level]
             f = F_lambda[(lin_ind)+knot_points*upper_level]
+            # print(f"level {level}, b_id {b_id} Sbar {Sbar} \n f {f}")
 
-            if(is_choleskysafe(Sbar)):             
-             f[:]=linalg.cho_solve((Sbar,True),f,overwrite_b=True)
-            else:
-               print("Cant sovle Chol")
+                     
+            f[:]=linalg.cho_solve((Sbar,True),f,overwrite_b=True)
+
+            # while(is_choleskysafe(Sbar)==False):
+            #    Sbar+=Sbar+10*np.eye(2)
+
 
    # update SHUR - update x and z compliments      
       for b_id in range(L):
          for t_id in range(num_perblock):
+            # print(f"update shur {level}\n")
             i = (b_id*4)+t_id
             k = i//upper_levels
             upper_level = level+1+(i%upper_levels)
@@ -90,6 +104,7 @@ def BCHOL(knot_points,control_size, state_size,
             calc_lambda  = shouldCalcLambda(index, k,binary_tree)
             g = k+knot_points*upper_level
             updateShur(F_state,F_input,F_lambda,index,k,level,upper_level,calc_lambda,knot_points)
+#   breakpoint()
    #soln vector loop, use factorized matrices for a fast solver
   for level in range (depth):
      L = int(np.power(2.0,(depth-level-1)))
@@ -135,4 +150,4 @@ def BCHOL(knot_points,control_size, state_size,
 #   print("KKT soln BCHOL")
 #   with np.printoptions(precision=4, suppress=True):
 #     print(dxul)
-  return dxul.flatten()
+  return dxul

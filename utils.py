@@ -42,7 +42,6 @@ def buildBlocks(N,nu, nx,Q,R,q,r,A,B,d):
         ri=qi+nx
         G[qi:qi+nx,qi:qi+nx]=Q[i]
         G[ri:ri+nu,ri:ri+nu]=R[i]
-        
         qk = q[i]# + Q[i]*x[i]
         rk = r[i]# + R[i]*u[i]
         combined_row = np.hstack([qk, rk])

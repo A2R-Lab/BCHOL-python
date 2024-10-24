@@ -30,6 +30,7 @@ file_type = "json"
 # Read data based on user's choice
 if file_type == 'json':
     file_name = "lqr_prob.json"
+    # file_name = "lqr_prob_256.json"
     with open(file_name,'r') as file:
         data = json.load(file)
  
@@ -122,9 +123,9 @@ with np.printoptions(precision=4, suppress=True):
     print(chol_dxul)
 
 # #DELETE LATER
-print("soln as in Brian's code order:\n")
-for i in range(nhorizon):
-        print(f"d_{i} {d[i]}") #lambdas
-        print(f"q_{i}  {q[i]}") #x vector
-        print(f"r_{i} {r[i]}") #u vector
+# print("soln as in Brian's code order:\n")
+# for i in range(nhorizon):
+#         print(f"d_{i} {d[i]}") #lambdas
+#         print(f"q_{i}  {q[i]}") #x vector
+#         print(f"r_{i} {r[i]}") #u vector
    

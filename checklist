@@ -19,3 +19,21 @@ OCT 10:::
 
 Oct 14::
 --building the matrix for example and getting the same answer
+
+Oct 16::
+-- NP.Linalg == BCHOL! 
+
+now you have a ground truth building form Q,R and etc
+
+Next things to do: integrate your Bchol into pendulum
+check your soln for other timesteps (4,8,16,32...)
+comeback to Cuda and clean/optimize code
+
+First things first :
+- add it to pendulum
+
+Oct 21:
+Added BCHOl and LQRbuild to TrajopMPCReference - throws an error on level 1  (is_choleskysafe)
+
+ - fix buildBCHOL from blocks or delete it
+ - test BCHOL for different examples
