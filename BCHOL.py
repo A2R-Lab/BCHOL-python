@@ -9,6 +9,14 @@ except ImportError:
     # Fallback to absolute import (for when running as a standalone script)
     from utils import *
 
+"""
+Main solver function, imitates the kernel call in CUDA.
+Solves the LQR problem in a tree manner solving first the independent equations by calling the solveLeaf.
+Then traversing through the levels of the binary tree and solving factorInnerProduct, cho_solve, updateShur.
+First goes through the algorithm for the matrix and then doing the same for the right side vector.
+
+Returns dxul vector.
+"""
 def BCHOL(knot_points,control_size, state_size,
                   Q,R,q,r,A,B,d):
   #KKT constants

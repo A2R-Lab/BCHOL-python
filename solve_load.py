@@ -77,7 +77,7 @@ elif file_type == 'csv':
     with open(file_name,'r') as file:
         reader = csv.DictReader(file)
         data = [row for row in reader]
-        #fix the csv example later
+        #implement the csv example later
 else:
     print("Invalid file type.")
 
@@ -96,7 +96,7 @@ nstates= int(nstates)
 ninputs=int(ninputs)
 
 #INIT looks identical to the solve_lqr.cuh, 3D array use A[i] to get the matrix
-#B is transposed here - fix later
+#B is already transposed here 
 if(INIT):
     for i in range(nhorizon):
         print("i: ",i)
@@ -107,8 +107,7 @@ if(INIT):
         print(f"q  {q[i]}")
         print(f"r {r[i]}")
         print(f"d {d[i]}")
-#check d0=x0
-print("d0 ", d[0]) 
+
 #check against KKT
 KKT,kkt =buildKKT(nhorizon,ninputs, nstates,Q,R,q,r,A,B,d)
 dxul = np.linalg.solve(KKT, -kkt)
@@ -120,9 +119,9 @@ with np.printoptions(precision=4, suppress=True):
 chol_dxul=BCHOL(nhorizon,ninputs,nstates,Q,R,q,r,A,B,d)
 print("returned bchol dxul soln in the form of q,r, all lambdas later\n")
 with np.printoptions(precision=4, suppress=True):
-    print(chol_dxul)
+    print(chol_dxul.flatten())
 
-# #DELETE LATER
+
 # print("soln as in Brian's code order:\n")
 # for i in range(nhorizon):
 #         print(f"d_{i} {d[i]}") #lambdas

@@ -18,7 +18,7 @@ def buildKKT(N,nu, nx,Q,R,q,r,A,B,d):
     assert nx==Q[0].shape[1]
     assert nu==R[0].shape[1] 
     n = nx + nu
-    ####Check the di
+    ####Check the dimensions
     dim = N*(nx*2+nu)
     KKT=np.zeros((dim-1,dim-1)) 
 
