@@ -1,6 +1,7 @@
 import numpy as np
 import math
 import copy
+import csv
 import scipy.linalg as linalg
 from scipy.linalg.blas import dgemv,dgemm
 
@@ -329,3 +330,121 @@ def updateShur (s_F_state,s_F_input,s_F_lambda,index,i,level,
         g_state[:]=dgemm(alpha=-1,a=F_state,b=f,beta=1,c=g_state)
         g_input[:]=dgemm(alpha=-1,a=F_input,b=f,beta=1,c=g_input)
 
+
+def write_csv(filename, nhorizon, nx, nu, Q, R, q, r, A, B, d):
+    """
+    Writes the input arrays and metadata into a CSV file, all in a single row.
+    """
+    with open(filename, mode='w', newline='') as file:
+        writer = csv.writer(file)
+        
+        # Flatten each array and concatenate them into a single row
+        data_row = []
+
+        # Add metadata at the beginning
+        data_row.extend([nhorizon, nx, nu])
+
+        # Cost matrices (Q, R) for each timestep
+        for timestep in range(nhorizon):
+            data_row.extend(Q[timestep].flatten())
+            data_row.extend(R[timestep].flatten())
+
+        # Linear terms (q, r) for each timestep
+        for timestep in range(nhorizon):
+            data_row.extend(q[timestep].flatten())
+            data_row.extend(r[timestep].flatten())
+
+        # Dynamics matrices (A, B) for each timestep
+        for timestep in range(nhorizon):
+            data_row.extend(A[timestep].flatten())
+            data_row.extend(B[timestep].flatten())
+
+        # Offset vector (d) for each timestep
+        for timestep in range(nhorizon):
+            data_row.extend(d[timestep].flatten())
+
+        # Write the concatenated row (with metadata) to the CSV
+        writer.writerow(data_row)
+
+    print(f"CSV file '{filename}' written successfully with metadata in the same row.")
+
+
+def read_csv(filename):
+    """
+    Reads a single-row CSV file containing metadata and flattened arrays, and reconstructs the arrays.
+
+    Args:
+        filename (str): Path to the CSV file.
+
+    Returns:
+        tuple: Contains metadata (nhorizon, nx, nu) and reconstructed arrays (Q, R, q, r, A, B, d, soln).
+    """
+    with open(filename, 'r') as file:
+        # Read the single row
+        row = file.readline().strip().split(',')
+
+    # Extract metadata
+    nhorizon = int(row[0])
+    nx = int(row[1])
+    nu = int(row[2])
+
+    # Initialize arrays
+    Q = []
+    R = []
+    q = []
+    r = []
+    A = []
+    B = []
+    d = []
+
+    # Compute sizes
+    q_size = nx
+    r_size = nu
+    Q_size = nx * nx
+    R_size = nu * nu
+    A_size = nx * nx
+    B_size = nx * nu
+    d_size = nx
+
+    # Parse flattened data
+    idx = 3  # Start after metadata
+
+    # Read Q and R
+    for _ in range(nhorizon):
+        Q.append(np.array(row[idx:idx + Q_size], dtype=float).reshape(nx, nx))
+        idx += Q_size
+        R.append(np.array(row[idx:idx + R_size], dtype=float).reshape(nu, nu))
+        idx += R_size
+
+
+    # Read q and r
+    for _ in range(nhorizon):
+        q.append(np.array(row[idx:idx + q_size], dtype=float).reshape(nx, 1))
+        idx += q_size
+        r.append(np.array(row[idx:idx + r_size], dtype=float).reshape(nu, 1))
+        idx += r_size
+
+
+    # Read A and B
+    for _ in range(nhorizon):
+        A.append(np.array(row[idx:idx + A_size], dtype=float).reshape(nx, nx))
+        idx += A_size
+        B.append(np.array(row[idx:idx + B_size], dtype=float).reshape(nu, nx))
+        idx += B_size
+    # # Read d
+    for _ in range(nhorizon):
+        d.append(np.array(row[idx:idx + d_size], dtype=float).reshape(nx, 1))
+        idx += d_size
+
+    Q=np.array(Q)
+    R=np.array(R)
+    q = np.array(q)
+    q = q[:,:,0]
+    r = np.array(r)
+    r = r[:,:,0]
+    A = np.array(A)
+    B = np.array(B)
+    d = np.array(d)
+    d = d[:,:,0]
+
+    return nhorizon, nx, nu, Q, R, q, r, A, B, d
