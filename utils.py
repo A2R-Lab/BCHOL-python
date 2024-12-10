@@ -345,22 +345,28 @@ def write_csv(filename, nhorizon, nx, nu, Q, R, q, r, A, B, d):
         data_row.extend([nhorizon, nx, nu])
 
         # Cost matrices (Q, R) for each timestep
-        for timestep in range(nhorizon):
+        for timestep in range(nhorizon-1):
             data_row.extend(Q[timestep].flatten())
             data_row.extend(R[timestep].flatten())
+        print(timestep)
+        data_row.extend(Q[timestep+1].flatten())
+        print("after ",timestep+1)
 
         # Linear terms (q, r) for each timestep
-        for timestep in range(nhorizon):
+        for timestep in range(nhorizon-1):
             data_row.extend(q[timestep].flatten())
             data_row.extend(r[timestep].flatten())
+        data_row.extend(q[timestep+1].flatten())
+
 
         # Dynamics matrices (A, B) for each timestep
-        for timestep in range(nhorizon):
+        for timestep in range(nhorizon-1):
             data_row.extend(A[timestep].flatten())
             data_row.extend(B[timestep].flatten())
 
         # Offset vector (d) for each timestep
         for timestep in range(nhorizon):
+            print(f"row[idx:idx + d_size]: {d[timestep]}")
             data_row.extend(d[timestep].flatten())
 
         # Write the concatenated row (with metadata) to the CSV
@@ -387,6 +393,8 @@ def read_csv(filename):
     nhorizon = int(row[0])
     nx = int(row[1])
     nu = int(row[2])
+    #correct
+    print(f"First read {nhorizon},{nx},{nu}")
 
     # Initialize arrays
     Q = []
@@ -409,28 +417,38 @@ def read_csv(filename):
     # Parse flattened data
     idx = 3  # Start after metadata
 
-    # Read Q and R
-    for _ in range(nhorizon):
+    # Read Q and R - correct
+    for _ in range(nhorizon-1):
         Q.append(np.array(row[idx:idx + Q_size], dtype=float).reshape(nx, nx))
         idx += Q_size
         R.append(np.array(row[idx:idx + R_size], dtype=float).reshape(nu, nu))
         idx += R_size
+    Q.append(np.array(row[idx:idx + Q_size], dtype=float).reshape(nx, nx))
+    idx += Q_size
+    R.append(np.zeros((nu, nu), dtype=float))
 
 
     # Read q and r
-    for _ in range(nhorizon):
+    for x in range(nhorizon-1):
         q.append(np.array(row[idx:idx + q_size], dtype=float).reshape(nx, 1))
         idx += q_size
         r.append(np.array(row[idx:idx + r_size], dtype=float).reshape(nu, 1))
         idx += r_size
-
+    q.append(np.array(row[idx:idx + q_size], dtype=float).reshape(nx, 1))
+    idx += q_size
+    r.append(np.zeros((nu,1),dtype=float))
 
     # Read A and B
-    for _ in range(nhorizon):
+    for x in range(nhorizon-1):
         A.append(np.array(row[idx:idx + A_size], dtype=float).reshape(nx, nx))
         idx += A_size
         B.append(np.array(row[idx:idx + B_size], dtype=float).reshape(nu, nx))
         idx += B_size
+
+    #add 0s
+    A.append(np.zeros((nx,nx),dtype=float))
+    B.append(np.zeros((nu,nx),dtype=float))
+
     # # Read d
     for _ in range(nhorizon):
         d.append(np.array(row[idx:idx + d_size], dtype=float).reshape(nx, 1))
