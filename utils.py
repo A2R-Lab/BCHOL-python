@@ -346,11 +346,9 @@ def write_csv(filename, nhorizon, nx, nu, Q, R, q, r, A, B, d):
 
         # Cost matrices (Q, R) for each timestep
         for timestep in range(nhorizon-1):
-            data_row.extend(Q[timestep].flatten())
-            data_row.extend(R[timestep].flatten())
-        print(timestep)
-        data_row.extend(Q[timestep+1].flatten())
-        print("after ",timestep+1)
+            data_row.extend(Q[timestep].flatten(order='F'))
+            data_row.extend(R[timestep].flatten(order='F'))
+        data_row.extend(Q[timestep+1].flatten(order='F'))
 
         # Linear terms (q, r) for each timestep
         for timestep in range(nhorizon-1):
@@ -361,12 +359,11 @@ def write_csv(filename, nhorizon, nx, nu, Q, R, q, r, A, B, d):
 
         # Dynamics matrices (A, B) for each timestep
         for timestep in range(nhorizon-1):
-            data_row.extend(A[timestep].flatten())
-            data_row.extend(B[timestep].flatten())
+            data_row.extend(A[timestep].flatten(order='F'))
+            data_row.extend(B[timestep].flatten(order='F'))
 
         # Offset vector (d) for each timestep
         for timestep in range(nhorizon):
-            print(f"row[idx:idx + d_size]: {d[timestep]}")
             data_row.extend(d[timestep].flatten())
 
         # Write the concatenated row (with metadata) to the CSV
@@ -419,11 +416,11 @@ def read_csv(filename):
 
     # Read Q and R - correct
     for _ in range(nhorizon-1):
-        Q.append(np.array(row[idx:idx + Q_size], dtype=float).reshape(nx, nx))
+        Q.append(np.array(row[idx:idx + Q_size], dtype=float).reshape(nx, nx,order='F'))
         idx += Q_size
-        R.append(np.array(row[idx:idx + R_size], dtype=float).reshape(nu, nu))
+        R.append(np.array(row[idx:idx + R_size], dtype=float).reshape(nu, nu,order='F'))
         idx += R_size
-    Q.append(np.array(row[idx:idx + Q_size], dtype=float).reshape(nx, nx))
+    Q.append(np.array(row[idx:idx + Q_size], dtype=float).reshape(nx, nx,order='F'))
     idx += Q_size
     R.append(np.zeros((nu, nu), dtype=float))
 
@@ -440,9 +437,9 @@ def read_csv(filename):
 
     # Read A and B
     for x in range(nhorizon-1):
-        A.append(np.array(row[idx:idx + A_size], dtype=float).reshape(nx, nx))
+        A.append(np.array(row[idx:idx + A_size], dtype=float).reshape(nx, nx,order='F'))
         idx += A_size
-        B.append(np.array(row[idx:idx + B_size], dtype=float).reshape(nu, nx))
+        B.append(np.array(row[idx:idx + B_size], dtype=float).reshape(nu, nx,order='F'))
         idx += B_size
 
     #add 0s
