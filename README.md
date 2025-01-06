@@ -4,7 +4,7 @@ Python proof of concept for [BCHOL](https://github.com/A2R-Lab/BCHOL).
 
 Solves for x in Ax = b, using the Recursive Schur Linear Quadratic Regulator explained in the paper [A Parallell Linear System Solver for Optimal Control](https://bjack205.github.io/papers/rslqr.pdf) by Brian E.Jackson. It requires A to be a positive semi-definite matrix to guarantee a good result.
 
-This method is part of the Python implementation of trajectory optimization (trajopt) algorithms and model predictive control (MPC). Learn more about different TrajoptMPC [here](https://github.com/A2R-Lab/TrajoptMPCReference)
+This method is part of the Python implementation of trajectory optimization (trajopt) algorithms and model predictive control (MPC). Learn more about different TrajoptMPC [here](https://github.com/A2R-Lab/TrajoptMPCReference).
 
 ## Requirements
 - [Python 3.10+](https://www.python.org/downloads/)
