@@ -66,13 +66,6 @@ if file_type == 'json':
             B_list.append(lqr['B'])
             if(index!=nhorizon):
                 d_list.append(lqr['d'])
-
-    # Accessing solution data
-    """
-    print("\nSolution data:")
-    for sol in soln:
-        print(sol)
-    """
 elif file_type == 'csv':
     file_name = input("Enter the CSV file name: ")
     with open(file_name,'r') as file:
@@ -122,7 +115,6 @@ chol_dxul=BCHOL(nhorizon,ninputs,nstates,Q,R,q,r,A,B,d)
 print("returned bchol dxul soln in the form of x,u, all lambdas later\n")
 with np.printoptions(precision=4, suppress=True):
     print(chol_dxul.flatten())
-
 
 print("soln as in Brian's code order:\n")
 for i in range(nhorizon):

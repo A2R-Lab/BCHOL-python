@@ -235,7 +235,6 @@ def solveLeaf(levels,index, nstates,nhorizon,s_Q,s_R,s_q,s_r,s_A,s_B,s_d,
             F_state[:]=linalg.cho_solve((Q,lower_Q),F_state,overwrite_b=True)
             s_F_input[lin_index] = np.copy(B)*1 
             F_input = s_F_input[lin_index]
-            #CHECK IF YOU NEED TO TRANSPOSE!
             F_input[:]=linalg.cho_solve((R,lower_R),F_input,overwrite_b = True)
         
         q[:]=linalg.cho_solve((Q,lower_Q),q,overwrite_b=True)
@@ -258,7 +257,6 @@ def factorInnerProduct(s_A,s_B, s_F_state,s_F_input,s_F_lambda,index,
         F2_state = s_F_state[(index+1)]
         S = s_F_lambda[(index+1)]
         # Perform dgemv operations
-        # S[:] = dgemv(alpha=1, a=C1_state, x=F1_state, beta=-1, y=S, trans=1)
         S = np.dot(C1_state.T, F1_state) - S
         S[:] = dgemv(alpha=1, a=C1_input.T, x=F1_input, beta=1, y=S)
         S +=-1*F2_state
@@ -390,8 +388,6 @@ def read_csv(filename):
     nhorizon = int(row[0])
     nx = int(row[1])
     nu = int(row[2])
-    #correct
-    print(f"First read {nhorizon},{nx},{nu}")
 
     # Initialize arrays
     Q = []
@@ -446,7 +442,7 @@ def read_csv(filename):
     A.append(np.zeros((nx,nx),dtype=float))
     B.append(np.zeros((nu,nx),dtype=float))
 
-    # # Read d
+    #Read d
     for _ in range(nhorizon):
         d.append(np.array(row[idx:idx + d_size], dtype=float).reshape(nx, 1))
         idx += d_size
