@@ -17,25 +17,18 @@ pip3 install -r requirements.txt
 
 <!-- Add actual code lines for example! -->
 
-If you already have a defined LQR problem in a KKT form in a saved file **.json/.csv** you can look at ```solve_load.py``` for an example.
+If you already have a defined LQR problem in a KKT form in a saved file **.json/.csv** you can look at ```solve_load.py``` for an example. The program will return the solution in two forms:
+1. Flattened dxul vector 
+2. Brian Jackson's format as mentioned in the paper [lambda_i ; x_i; u_i]
+
+```shell
+python solve_load.py
+```
 
 If you just have an A matrix and a b vector look at  ```solve_build.py``` for an example.
 
-Both files will return an xyz solution vector.
+Both files will return an xyz solution vector in dxul.
 
-<!-- Ask Brian what are your preconditiones!
-## Preconditoners 
-
-
-This provides the following preconditoners
-
-1. Identity: "0"
-2. Jacobi (Diagonal): "J"
-3. Block Jacobi (Block-diagonal): "BJ"
-4. Symmetric Stair: "SS" 
-
-While (1) and (2) only require the matrix A, (3) and (4) additional require the block_size (nx) to be passed in.
- -->
 
 
 ### Citing

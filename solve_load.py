@@ -9,6 +9,7 @@ import numpy as np
 import json
 import csv
 INIT = False
+CHECK = False
 
 #function specific imports
 from BCHOL import BCHOL
@@ -109,22 +110,23 @@ if(INIT):
         print(f"d {d[i]}")
 
 #check against KKT
-KKT,kkt =buildKKT(nhorizon,ninputs, nstates,Q,R,q,r,A,B,d)
-dxul = np.linalg.solve(KKT, -kkt)
-print("Traditional KKT,np soln\n")
-with np.printoptions(precision=4, suppress=True):
-    print(dxul)
+if (CHECK):
+    KKT,kkt =buildKKT(nhorizon,ninputs, nstates,Q,R,q,r,A,B,d)
+    dxul = np.linalg.solve(KKT, -kkt)
+    print("Traditional KKT,np soln\n")
+    with np.printoptions(precision=4, suppress=True):
+        print(dxul)
 
 #imitating calling the kernel
 chol_dxul=BCHOL(nhorizon,ninputs,nstates,Q,R,q,r,A,B,d)
-print("returned bchol dxul soln in the form of q,r, all lambdas later\n")
+print("returned bchol dxul soln in the form of x,u, all lambdas later\n")
 with np.printoptions(precision=4, suppress=True):
     print(chol_dxul.flatten())
 
 
-# print("soln as in Brian's code order:\n")
-# for i in range(nhorizon):
-#         print(f"d_{i} {d[i]}") #lambdas
-#         print(f"q_{i}  {q[i]}") #x vector
-#         print(f"r_{i} {r[i]}") #u vector
+print("soln as in Brian's code order:\n")
+for i in range(nhorizon):
+        print(f"lambda(d)_{i} {d[i]}") #lambdas
+        print(f"x(q)_{i}  {q[i]}") #x vector
+        print(f"u(r)_{i} {r[i]}") #u vector
    
