@@ -23,21 +23,22 @@ def BCHOL(knot_points,control_size, state_size,
   depth = int(np.log2(knot_points))
   binary_tree =initBTlevel(knot_points)
 
-  #negate q_r and d vectors
-  q[:]=-q #state vector
-  r[:]= -r # input vector/ control vector
-  d[:]= -d #lambda /lagrange multiplies
+  #negate q_r and d vectors (this way we don't change the original q,r from outside of this function)
+  q = np.array(-q, dtype=np.float64)
+  r = np.array(-r, dtype=np.float64)
+  d = np.array(-d, dtype=np.float64)
+
+
 
   #Set F_lambda,F_state, and F_input
-  F_lambda = np.zeros((knot_points*depth,state_size,state_size))
-  F_state = np.zeros((knot_points*depth,state_size,state_size))
-  F_input = np.zeros((knot_points*depth,control_size,state_size))
+  F_lambda = np.zeros((knot_points*depth, state_size, state_size), dtype=np.float64)
+  F_state = np.zeros((knot_points*depth, state_size, state_size), dtype=np.float64)
+  F_input = np.zeros((knot_points*depth, control_size, state_size), dtype=np.float64)
 
-  epsln = 1e-6
-  for i in range(Q.shape[0]):
-     Q[i]+= np.diag(np.full(Q.shape[1], epsln))
-     R[i]+=np.diag(np.full(R.shape[1], epsln))
-     
+
+# checked that F_factors are zeroed
+#   print(f"F_lambda {F_lambda}\n F_state {F_state}\n, F_input {F_input}\n") 
+
   for ind in range (knot_points):
       solveLeaf(binary_tree,ind, state_size,knot_points,Q,R,q,r,A,B,d,F_lambda,F_state, F_input)
 
@@ -136,7 +137,7 @@ def BCHOL(knot_points,control_size, state_size,
         if(i!=knot_points-1):
          dxul[start:start+control_size] = r[i]
         l_start = lambda_st+i*state_size 
-        dxul[l_start:l_start+state_size] = d[i]
+        dxul[l_start:l_start+state_size] = -d[i]
   dxul=dxul[:-control_size]
   dxul=dxul.reshape(knot_points*(state_size)+(knot_points-1)*(state_size+control_size)+state_size,1)
   return dxul

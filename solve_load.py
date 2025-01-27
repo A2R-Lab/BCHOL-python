@@ -121,4 +121,7 @@ for i in range(nhorizon):
         print(f"lambda(d)_{i} {d[i]}") #lambdas
         print(f"x(q)_{i}  {q[i]}") #x vector
         print(f"u(r)_{i} {r[i]}") #u vector
+
+#check what happens after 1 iteration
+
    
